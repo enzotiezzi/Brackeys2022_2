@@ -23,4 +23,7 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
 	UBehaviorTree* BehaviorTree;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UAIPerceptionComponent* AIPerceptionComponent;
 };

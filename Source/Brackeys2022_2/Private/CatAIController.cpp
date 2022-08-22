@@ -3,9 +3,13 @@
 
 #include "CatAIController.h"
 
+#include <AIModule/Classes/Perception/AIPerceptionComponent.h>
+
 ACatAIController::ACatAIController()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>("AIPerceptionComponent");
 }
 
 void ACatAIController::BeginPlay()
