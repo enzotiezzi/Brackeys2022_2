@@ -71,10 +71,7 @@ void AMyPlayerController::MoveForwardLeftAnalog(float AxisValue)
 {
 	if (APlayerCharacter* CurrentCharacter = Cast<APlayerCharacter>(GetPawn()))
 	{
-		if (CurrentCharacter->PlayerType == EPlayerType::ChiefChicken)
-		{
-			MoveForward(AxisValue, CurrentCharacter);
-		}
+		MoveForward(AxisValue, CurrentCharacter);
 	}
 }
 
@@ -82,31 +79,32 @@ void AMyPlayerController::MoveSidesLeftAnalog(float AxisValue)
 {
 	if (APlayerCharacter* CurrentCharacter = Cast<APlayerCharacter>(GetPawn()))
 	{
-		if (CurrentCharacter->PlayerType == EPlayerType::ChiefChicken)
-		{
-			MoveSides(AxisValue, CurrentCharacter);
-		}
+		MoveSides(AxisValue, CurrentCharacter);
 	}
 }
 
 void AMyPlayerController::MoveForwardRightAnalog(float AxisValue)
 {
-	if (APlayerCharacter* CurrentCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 1)->GetPawn()))
+	APlayerCharacter* CurrentCharacter = Cast<APlayerCharacter>(GetPawn());
+
+	if (APlayerCharacter* Player2Character = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 1)->GetPawn()))
 	{
-		if (CurrentCharacter->PlayerType == EPlayerType::Believer)
+		if (Player2Character->PlayerType == EPlayerType::Believer && CurrentCharacter->PlayerType == EPlayerType::ChiefChicken)
 		{
-			MoveForward(AxisValue, CurrentCharacter);
+			MoveForward(AxisValue, Player2Character);
 		}
 	}
 }
 
 void AMyPlayerController::MoveSidesRightAnalog(float AxisValue)
 {
-	if (APlayerCharacter* CurrentCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 1)->GetPawn()))
+	APlayerCharacter* CurrentCharacter = Cast<APlayerCharacter>(GetPawn());
+
+	if (APlayerCharacter* Player2Character = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 1)->GetPawn()))
 	{
-		if (CurrentCharacter->PlayerType == EPlayerType::Believer)
+		if (Player2Character->PlayerType == EPlayerType::Believer && CurrentCharacter->PlayerType == EPlayerType::ChiefChicken)
 		{
-			MoveSides(AxisValue, CurrentCharacter);
+			MoveSides(AxisValue, Player2Character);
 		}
 	}
 }
