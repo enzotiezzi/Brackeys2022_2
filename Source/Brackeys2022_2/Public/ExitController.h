@@ -22,8 +22,10 @@ protected:
 
 	void CheckWinCondition();
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Chickens")
 	APlayerCharacter* ChiefChicken;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Chickens")
 	APlayerCharacter* Believer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Next Level")
@@ -36,4 +38,21 @@ public:
 	void NotifyChickenArrived(APlayerCharacter* Player);
 
 	void NotifyChickenGotOut(APlayerCharacter* Player);
+
+protected:
+	/*
+	*
+	*  UI
+	* 
+	*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> WinWidgetRef;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
+	UUserWidget* WinWidget;
+
+	void SetupWinWidget();
+
+	UFUNCTION()
+	void GoToNextLevel();
 };
