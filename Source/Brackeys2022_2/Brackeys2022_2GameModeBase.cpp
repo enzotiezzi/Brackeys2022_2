@@ -5,6 +5,7 @@
 #include <Kismet/GameplayStatics.h>
 #include <GameFramework/PlayerStart.h>
 #include <MyPlayerStart.h>
+#include <MyCameraActor.h>
 
 ABrackeys2022_2GameModeBase::ABrackeys2022_2GameModeBase()
 {
@@ -36,6 +37,10 @@ void ABrackeys2022_2GameModeBase::BeginPlay()
 			if (ChiefChicken)
 			{
 				ChiefChickenController->Possess(ChiefChicken);
+
+				AActor* MyCameraActor = UGameplayStatics::GetActorOfClass(GetWorld(), AMyCameraActor::StaticClass());
+
+				ChiefChickenController->SetViewTargetWithBlend(MyCameraActor);
 			}
 
 			PlayersStart[0]->Destroy();
