@@ -8,7 +8,7 @@ public class Brackeys2022_2 : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" , "AIModule", "GameplayTasks", "NavigationSystem", "UMG", "SlateCore" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
