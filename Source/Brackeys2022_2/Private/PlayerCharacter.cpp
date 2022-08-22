@@ -17,7 +17,7 @@ APlayerCharacter::APlayerCharacter()
 	SpringArmComponent->SetupAttachment(GetMesh());
 	CameraComponent->SetupAttachment(SpringArmComponent, USpringArmComponent::SocketName);
 
-	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
 }
 
 // Called when the game starts or when spawned

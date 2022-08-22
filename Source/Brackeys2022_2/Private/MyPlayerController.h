@@ -18,16 +18,16 @@ class AMyPlayerController : public APlayerController
 public:
 	AMyPlayerController();
 
-	void BeginPlay() override;
-
 	void Tick(float DeltaSeconds) override;
 
 	virtual void SetupInputComponent() override;
 
-protected:
-	void MoveForward(float AxisValue);
+	virtual void OnPossess(APawn* NewPawn) override;
 
-	void MoveSides(float AxisValue);
+protected:
+	void MoveForward(float AxisValue, APawn* PawnToMove);
+
+	void MoveSides(float AxisValue, APawn* PawnToMove);
 
 	void MoveForwardLeftAnalog(float AxisValue);
 

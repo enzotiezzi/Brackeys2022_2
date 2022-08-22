@@ -4,15 +4,17 @@
 #include "MyPlayerController.h"
 #include <PlayerCharacter.h>
 #include <Kismet/GameplayStatics.h>
+#include <PlayerCharacter.h>
+#include <Camera/CameraComponent.h>
 
 AMyPlayerController::AMyPlayerController()
 {
 
 }
 
-void AMyPlayerController::BeginPlay()
+void AMyPlayerController::OnPossess(APawn* NewPawn)
 {
-	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn()))
+	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(NewPawn))
 	{
 		if (PlayerCharacter->PlayerType == EPlayerType::Believer)
 		{
@@ -21,7 +23,7 @@ void AMyPlayerController::BeginPlay()
 		}
 	}
 
-	Super::BeginPlay();
+	Super::OnPossess(NewPawn);
 }
 
 void AMyPlayerController::Tick(float DeltaSeconds)
@@ -39,7 +41,7 @@ void AMyPlayerController::SetupInputComponent()
 	InputComponent->BindAxis("RightAnalogSideMovement", this, &AMyPlayerController::MoveSidesRightAnalog);
 }
 
-void AMyPlayerController::MoveForward(float AxisValue)
+void AMyPlayerController::MoveForward(float AxisValue, APawn* PawnToMove)
 {
 	if (AxisValue != 0)
 	{
@@ -48,11 +50,11 @@ void AMyPlayerController::MoveForward(float AxisValue)
 
 		FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		
-		GetPawn()->AddMovementInput(Direction, AxisValue);
+		PawnToMove->AddMovementInput(Direction, AxisValue);
 	}
 }
 
-void AMyPlayerController::MoveSides(float AxisValue)
+void AMyPlayerController::MoveSides(float AxisValue, APawn* PawnToMove)
 {
 	if (AxisValue != 0)
 	{
@@ -61,7 +63,7 @@ void AMyPlayerController::MoveSides(float AxisValue)
 
 		FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-		GetPawn()->AddMovementInput(Direction, AxisValue);
+		PawnToMove->AddMovementInput(Direction, AxisValue);
 	}
 }
 
@@ -71,7 +73,7 @@ void AMyPlayerController::MoveForwardLeftAnalog(float AxisValue)
 	{
 		if (CurrentCharacter->PlayerType == EPlayerType::ChiefChicken)
 		{
-			MoveForward(AxisValue);
+			MoveForward(AxisValue, CurrentCharacter);
 		}
 	}
 }
@@ -82,31 +84,29 @@ void AMyPlayerController::MoveSidesLeftAnalog(float AxisValue)
 	{
 		if (CurrentCharacter->PlayerType == EPlayerType::ChiefChicken)
 		{
-			MoveSides(AxisValue);
+			MoveSides(AxisValue, CurrentCharacter);
 		}
 	}
 }
 
 void AMyPlayerController::MoveForwardRightAnalog(float AxisValue)
 {
-	if (APlayerCharacter* CurrentCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 1)))
+	if (APlayerCharacter* CurrentCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 1)->GetPawn()))
 	{
 		if (CurrentCharacter->PlayerType == EPlayerType::Believer)
 		{
-			MoveForward(AxisValue);
+			MoveForward(AxisValue, CurrentCharacter);
 		}
 	}
 }
 
 void AMyPlayerController::MoveSidesRightAnalog(float AxisValue)
 {
-	auto Player1 = UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn();
-
-	if (APlayerCharacter* CurrentCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 1)))
+	if (APlayerCharacter* CurrentCharacter = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 1)->GetPawn()))
 	{
 		if (CurrentCharacter->PlayerType == EPlayerType::Believer)
 		{
-			MoveSides(AxisValue);
+			MoveSides(AxisValue, CurrentCharacter);
 		}
 	}
 }
