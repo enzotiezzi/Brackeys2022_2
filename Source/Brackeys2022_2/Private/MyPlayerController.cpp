@@ -6,9 +6,15 @@
 #include <Kismet/GameplayStatics.h>
 #include <PlayerCharacter.h>
 #include <Camera/CameraComponent.h>
+#include <UMG/Public/Blueprint/UserWidget.h>
+#include <Components/Button.h>
 
 AMyPlayerController::AMyPlayerController()
 {
+	static ConstructorHelpers::FClassFinder<UUserWidget> PauseMenuWidgetFinder(TEXT("/Game/UI/WBP_PauseMenu"));
+
+	if(PauseMenuWidgetFinder.Succeeded())
+		PauseMenuWidgetRef = PauseMenuWidgetFinder.Class;
 
 }
 
@@ -26,6 +32,13 @@ void AMyPlayerController::OnPossess(APawn* NewPawn)
 	Super::OnPossess(NewPawn);
 }
 
+void AMyPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	SetupPauseMenuWidget();
+}
+
 void AMyPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -39,6 +52,8 @@ void AMyPlayerController::SetupInputComponent()
 	InputComponent->BindAxis("LeftAnalogSideMovement", this, &AMyPlayerController::MoveSidesLeftAnalog);
 	InputComponent->BindAxis("RightAnalogForwardMovement", this, &AMyPlayerController::MoveForwardRightAnalog);
 	InputComponent->BindAxis("RightAnalogSideMovement", this, &AMyPlayerController::MoveSidesRightAnalog);
+
+	InputComponent->BindAction("Pause", IE_Pressed, this, &AMyPlayerController::PauseGame);
 }
 
 void AMyPlayerController::MoveForward(float AxisValue, APawn* PawnToMove)
@@ -106,5 +121,49 @@ void AMyPlayerController::MoveSidesRightAnalog(float AxisValue)
 		{
 			MoveSides(AxisValue, Player2Character);
 		}
+	}
+}
+
+void AMyPlayerController::SetupPauseMenuWidget()
+{
+	if (PauseMenuWidgetRef)
+	{
+		if (!PauseWidget)
+		{
+			PauseWidget = CreateWidget<UUserWidget>(GetWorld(), PauseMenuWidgetRef);
+
+			UButton* ResumeButton = Cast<UButton>(PauseWidget->GetWidgetFromName("ResumeButton"));
+			ResumeButton->OnClicked.AddDynamic(this, &AMyPlayerController::ResumeGame);
+		}
+	}
+}
+
+void AMyPlayerController::PauseGame()
+{
+	if (PauseWidget)
+	{
+		if (!PauseWidget->IsInViewport())
+			PauseWidget->AddToViewport();
+		
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+
+		SetShowMouseCursor(true);
+
+		FInputModeUIOnly InputMode; 
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+		InputMode.SetWidgetToFocus(PauseWidget->GetWidgetFromName("ResumeButton")->TakeWidget());
+		
+		SetInputMode(InputMode);
+	}
+}
+
+void AMyPlayerController::ResumeGame()
+{
+	if (PauseWidget->IsInViewport())
+	{
+		PauseWidget->RemoveFromViewport();
+		UGameplayStatics::SetGamePaused(GetWorld(), false);
+		SetShowMouseCursor(false);
+		SetInputMode(FInputModeGameOnly());
 	}
 }

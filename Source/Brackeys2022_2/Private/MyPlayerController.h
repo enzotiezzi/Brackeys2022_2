@@ -18,6 +18,8 @@ class AMyPlayerController : public APlayerController
 public:
 	AMyPlayerController();
 
+	void BeginPlay() override;
+
 	void Tick(float DeltaSeconds) override;
 
 	virtual void SetupInputComponent() override;
@@ -36,4 +38,23 @@ protected:
 	void MoveForwardRightAnalog(float AxisValue);
 
 	void MoveSidesRightAnalog(float AxisValue);
+
+	/*
+	*
+	* UI
+	* 
+	*/
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> PauseMenuWidgetRef;
+
+	UUserWidget* PauseWidget;
+
+	void SetupPauseMenuWidget();
+
+	UFUNCTION()
+	void PauseGame();
+
+	UFUNCTION()
+	void ResumeGame();
 };
