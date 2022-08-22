@@ -2,6 +2,7 @@
 
 
 #include "ExitController.h"
+#include <Kismet/GameplayStatics.h>
 
 // Sets default values
 AExitController::AExitController()
@@ -30,6 +31,9 @@ void AExitController::CheckWinCondition()
 	if (ChiefChicken && Believer)
 	{
 		GEngine->AddOnScreenDebugMessage(rand(), 1, FColor::Yellow, "YOU WIN");
+	
+		if(!NextLevelName.IsNone())
+			UGameplayStatics::OpenLevel(GetWorld(), NextLevelName);
 	}
 }
 

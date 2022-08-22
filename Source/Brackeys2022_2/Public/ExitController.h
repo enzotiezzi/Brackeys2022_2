@@ -26,6 +26,9 @@ protected:
 
 	APlayerCharacter* Believer;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Next Level")
+	FName NextLevelName;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
