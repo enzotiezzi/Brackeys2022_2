@@ -26,6 +26,12 @@ public:
 
 	virtual void OnPossess(APawn* NewPawn) override;
 
+	UFUNCTION()
+	void PauseGame();
+
+	UFUNCTION()
+	void ResumeGame();
+
 protected:
 	void MoveForward(float AxisValue, APawn* PawnToMove);
 
@@ -51,10 +57,4 @@ protected:
 	UUserWidget* PauseWidget;
 
 	void SetupPauseMenuWidget();
-
-	UFUNCTION()
-	void PauseGame();
-
-	UFUNCTION()
-	void ResumeGame();
 };

@@ -115,5 +115,16 @@ void AExitController::GoToNextLevel()
 		WinWidget->RemoveFromViewport();
 
 	if (!NextLevelName.IsNone())
+	{
+		if (AMyPlayerController* PlayerController = Cast<AMyPlayerController>(ChiefChicken->GetController()))
+		{
+			UGameplayStatics::SetGamePaused(GetWorld(), false);
+
+			PlayerController->SetShowMouseCursor(false);
+
+			PlayerController->SetInputMode(FInputModeGameOnly());
+		}
+
 		UGameplayStatics::OpenLevel(GetWorld(), NextLevelName);
+	}
 }

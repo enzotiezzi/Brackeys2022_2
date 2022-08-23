@@ -6,6 +6,7 @@
 #include <GameFramework/PlayerStart.h>
 #include <MyPlayerStart.h>
 #include <MyCameraActor.h>
+#include <MyPlayerController.h>
 
 ABrackeys2022_2GameModeBase::ABrackeys2022_2GameModeBase()
 {
@@ -22,8 +23,20 @@ void ABrackeys2022_2GameModeBase::BeginPlay()
 
 	if (PlayersStart.Num() == 2)
 	{
-		APlayerController* ChiefChickenController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-		APlayerController* BelieverController = UGameplayStatics::CreatePlayer(GetWorld(), 1);
+		AMyPlayerController* ChiefChickenController = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+		AMyPlayerController* BelieverController;
+
+		TArray<AActor*> Controllers;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController::StaticClass(), Controllers);
+		
+		if (Controllers.Num() == 2)
+		{
+			BelieverController = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 1));
+		}
+		else 
+		{
+			BelieverController = Cast<AMyPlayerController>(UGameplayStatics::CreatePlayer(GetWorld(), 1));
+		}
 
 		if (ChiefChickenRef)
 		{
@@ -42,8 +55,6 @@ void ABrackeys2022_2GameModeBase::BeginPlay()
 
 				ChiefChickenController->SetViewTargetWithBlend(MyCameraActor);
 			}
-
-			PlayersStart[0]->Destroy();
 		}
 
 		if (BelieverRef)
@@ -59,8 +70,6 @@ void ABrackeys2022_2GameModeBase::BeginPlay()
 			{
 				BelieverController->Possess(Believer);
 			}
-
-			PlayersStart[1]->Destroy();
 		}
 	}
 }
