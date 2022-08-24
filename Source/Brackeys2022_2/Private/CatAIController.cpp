@@ -4,10 +4,16 @@
 #include "CatAIController.h"
 
 #include <AIModule/Classes/Perception/AIPerceptionComponent.h>
+#include <AIModule/Classes/BehaviorTree/BehaviorTree.h>
 
 ACatAIController::ACatAIController()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BehaviorTreeFinder(TEXT("/Game/Cat/AI/BT_Cat"));
+
+	if (BehaviorTreeFinder.Succeeded())
+		BehaviorTree = BehaviorTreeFinder.Object;
 
 	AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>("AIPerceptionComponent");
 }
