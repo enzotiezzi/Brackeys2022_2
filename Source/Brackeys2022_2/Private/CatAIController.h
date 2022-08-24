@@ -24,6 +24,8 @@ public:
 	UFUNCTION()
 	void OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus);
 
+	void SetHearingRange(float HearingRange);
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
 	UBehaviorTree* BehaviorTree;

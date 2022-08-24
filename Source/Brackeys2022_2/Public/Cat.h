@@ -29,4 +29,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Path")
 	int CurrentPathPoint;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	float HearingRange = 1000;
 };

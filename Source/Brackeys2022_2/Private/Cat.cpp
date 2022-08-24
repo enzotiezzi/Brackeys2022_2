@@ -26,6 +26,8 @@ void ACat::BeginPlay()
 
 			AIController->GetBlackboardComponent()->SetValueAsVector("PathPoint", Path[CurrentPathPoint]->GetActorLocation());
 		}
+
+		AIController->SetHearingRange(HearingRange);
 	}
 }
 

@@ -6,6 +6,7 @@
 #include <AIModule/Classes/Perception/AIPerceptionComponent.h>
 #include <AIModule/Classes/BehaviorTree/BehaviorTree.h>
 #include <Perception/AISense_Hearing.h>
+#include <Perception/AISenseConfig_Hearing.h>
 
 ACatAIController::ACatAIController()
 {
@@ -35,4 +36,13 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
 	if(Stimulus.Type == UAISense::GetSenseID<UAISense_Hearing>())
 		GEngine->AddOnScreenDebugMessage(rand(), 1, FColor::Yellow, "Noise");
+}
+
+void ACatAIController::SetHearingRange(float HearingRange)
+{
+	UAISenseConfig_Hearing* HearingConfig = Cast<UAISenseConfig_Hearing>(AIPerceptionComponent->GetSenseConfig(UAISense::GetSenseID<UAISense_Hearing>()));
+
+	HearingConfig->HearingRange = HearingRange;
+
+	AIPerceptionComponent->ConfigureSense(*HearingConfig);
 }
