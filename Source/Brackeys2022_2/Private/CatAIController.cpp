@@ -5,6 +5,7 @@
 
 #include <AIModule/Classes/Perception/AIPerceptionComponent.h>
 #include <AIModule/Classes/BehaviorTree/BehaviorTree.h>
+#include <AIModule/Classes/BehaviorTree/BlackboardComponent.h>
 #include <Perception/AISense_Hearing.h>
 #include <Perception/AISenseConfig_Hearing.h>
 
@@ -29,13 +30,26 @@ void ACatAIController::BeginPlay()
 	if (BehaviorTree) 
 	{
 		RunBehaviorTree(BehaviorTree);
+
+		GetBlackboardComponent()->SetValueAsBool("HasNoise", false);
 	}
 }
 
 void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
-	if(Stimulus.Type == UAISense::GetSenseID<UAISense_Hearing>())
+	if (Stimulus.Type == UAISense::GetSenseID<UAISense_Hearing>())
+	{
 		GEngine->AddOnScreenDebugMessage(rand(), 1, FColor::Yellow, "Noise");
+		
+		GetBlackboardComponent()->SetValueAsBool("HasNoise", true);
+		GetBlackboardComponent()->SetValueAsVector("NoiseLocation", Stimulus.StimulusLocation);
+	
+		FTimerHandle ResetAgeTimer;
+		GetWorld()->GetTimerManager().SetTimer(ResetAgeTimer, [this]() 
+			{
+				GetBlackboardComponent()->SetValueAsBool("HasNoise", false);
+			}, Stimulus.GetAge(), false);
+	}
 }
 
 void ACatAIController::SetHearingRange(float HearingRange)
