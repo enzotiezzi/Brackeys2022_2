@@ -56,7 +56,8 @@ void AMyPlayerController::SetupInputComponent()
 	InputComponent->BindAxis("RightAnalogSideMovement", this, &AMyPlayerController::MoveSidesRightAnalog);
 
 	InputComponent->BindAction("Pause", IE_Pressed, this, &AMyPlayerController::PauseGame);
-	InputComponent->BindAction("Noise", IE_Pressed, this, &AMyPlayerController::MakeNoise);
+	InputComponent->BindAction("Noise", IE_Pressed, this, &AMyPlayerController::MakeNoiseCurrentPawn);
+	InputComponent->BindAction("BelieverNoise", IE_Pressed, this, &AMyPlayerController::BelieverMakeNoise);
 }
 
 void AMyPlayerController::MoveForward(float AxisValue, APawn* PawnToMove)
@@ -171,8 +172,25 @@ void AMyPlayerController::ResumeGame()
 	}
 }
 
-void AMyPlayerController::MakeNoise()
+void AMyPlayerController::MakeNoise(APawn* PawnToMakeNoise)
 {
-	NoiseEmitterComponent->MakeNoise(this, 1, GetPawn()->GetActorLocation());
+	NoiseEmitterComponent->MakeNoise(this, 1, PawnToMakeNoise->GetActorLocation());
+}
 
+void AMyPlayerController::MakeNoiseCurrentPawn()
+{
+	MakeNoise(GetPawn());
+}
+
+void AMyPlayerController::BelieverMakeNoise()
+{
+	APlayerCharacter* CurrentCharacter = Cast<APlayerCharacter>(GetPawn());
+
+	if (APlayerCharacter* Player2Character = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 1)->GetPawn()))
+	{
+		if (Player2Character->PlayerType == EPlayerType::Believer && CurrentCharacter->PlayerType == EPlayerType::ChiefChicken)
+		{
+			MakeNoise(Player2Character);
+		}
+	}
 }

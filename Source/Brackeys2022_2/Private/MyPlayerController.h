@@ -45,7 +45,11 @@ protected:
 
 	void MoveSidesRightAnalog(float AxisValue);
 
-	void MakeNoise();
+	void MakeNoiseCurrentPawn();
+
+	void BelieverMakeNoise();
+
+	void MakeNoise(APawn* PawnToMakeNoise);
 
 	/*
 	*
