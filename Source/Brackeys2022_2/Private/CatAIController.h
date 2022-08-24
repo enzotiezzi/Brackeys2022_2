@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <AIModule/Classes/Perception/AIPerceptionTypes.h>
 #include <BehaviorTree/BehaviorTreeComponent.h>
 #include "CoreMinimal.h"
 #include "AIController.h"
@@ -19,6 +20,9 @@ public:
 	ACatAIController();
 
 	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")

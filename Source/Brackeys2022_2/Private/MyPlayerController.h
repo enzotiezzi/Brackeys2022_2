@@ -45,6 +45,8 @@ protected:
 
 	void MoveSidesRightAnalog(float AxisValue);
 
+	void MakeNoise();
+
 	/*
 	*
 	* UI
@@ -57,4 +59,7 @@ protected:
 	UUserWidget* PauseWidget;
 
 	void SetupPauseMenuWidget();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPawnNoiseEmitterComponent* NoiseEmitterComponent;
 };

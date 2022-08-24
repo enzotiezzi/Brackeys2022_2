@@ -8,6 +8,7 @@
 #include <Camera/CameraComponent.h>
 #include <UMG/Public/Blueprint/UserWidget.h>
 #include <Components/Button.h>
+#include <Components/PawnNoiseEmitterComponent.h>
 
 AMyPlayerController::AMyPlayerController()
 {
@@ -16,6 +17,7 @@ AMyPlayerController::AMyPlayerController()
 	if(PauseMenuWidgetFinder.Succeeded())
 		PauseMenuWidgetRef = PauseMenuWidgetFinder.Class;
 
+	NoiseEmitterComponent = CreateDefaultSubobject<UPawnNoiseEmitterComponent>("NoiseEmitterComponent");
 }
 
 void AMyPlayerController::OnPossess(APawn* NewPawn)
@@ -54,6 +56,7 @@ void AMyPlayerController::SetupInputComponent()
 	InputComponent->BindAxis("RightAnalogSideMovement", this, &AMyPlayerController::MoveSidesRightAnalog);
 
 	InputComponent->BindAction("Pause", IE_Pressed, this, &AMyPlayerController::PauseGame);
+	InputComponent->BindAction("Noise", IE_Pressed, this, &AMyPlayerController::MakeNoise);
 }
 
 void AMyPlayerController::MoveForward(float AxisValue, APawn* PawnToMove)
@@ -166,4 +169,10 @@ void AMyPlayerController::ResumeGame()
 		SetShowMouseCursor(false);
 		SetInputMode(FInputModeGameOnly());
 	}
+}
+
+void AMyPlayerController::MakeNoise()
+{
+	NoiseEmitterComponent->MakeNoise(this, 1, GetPawn()->GetActorLocation());
+
 }

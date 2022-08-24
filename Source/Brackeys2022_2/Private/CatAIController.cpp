@@ -5,6 +5,7 @@
 
 #include <AIModule/Classes/Perception/AIPerceptionComponent.h>
 #include <AIModule/Classes/BehaviorTree/BehaviorTree.h>
+#include <Perception/AISense_Hearing.h>
 
 ACatAIController::ACatAIController()
 {
@@ -16,6 +17,8 @@ ACatAIController::ACatAIController()
 		BehaviorTree = BehaviorTreeFinder.Object;
 
 	AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>("AIPerceptionComponent");
+
+	AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ACatAIController::OnTargetUpdated);
 }
 
 void ACatAIController::BeginPlay()
@@ -26,4 +29,10 @@ void ACatAIController::BeginPlay()
 	{
 		RunBehaviorTree(BehaviorTree);
 	}
+}
+
+void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
+{
+	if(Stimulus.Type == UAISense::GetSenseID<UAISense_Hearing>())
+		GEngine->AddOnScreenDebugMessage(rand(), 1, FColor::Yellow, "Noise");
 }
