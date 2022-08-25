@@ -27,8 +27,14 @@ public:
 	void SetHearingRange(float HearingRange);
 
 protected:
+	UPROPERTY(BlueprintReadWrite)
+	FTimerHandle ResetAgeTimer;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
 	UBehaviorTree* BehaviorTree;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	float GetBackToPatrolInSeconds = 2;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Speed")
 	float ChasingSpeed = 600;

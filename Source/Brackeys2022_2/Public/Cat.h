@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <Components/WidgetComponent.h>
+#include <UMG/Public/Animation/WidgetAnimation.h>
 #include <CatPathPoint.h>
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
@@ -30,7 +32,17 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Path")
 	int CurrentPathPoint;
 
+	void NotifyNoise();
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 	float HearingRange = 1000;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UWidgetComponent* WidgetComponent;
+
+	UWidgetAnimation* GetAnimation(FText AnimationName);
+
+	UFUNCTION()
+	void OnAnimationFinished();
 };

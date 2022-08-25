@@ -39,17 +39,21 @@ void ACatAIController::BeginPlay()
 
 void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
-	if (Stimulus.Type == UAISense::GetSenseID<UAISense_Hearing>())
+	if (Stimulus.Type == UAISense::GetSenseID<UAISense_Hearing>() && Stimulus.GetAge() == 0.0)
 	{
 		if (ACat* Cat = Cast<ACat>(GetPawn()))
 		{
 			Cat->GetCharacterMovement()->MaxWalkSpeed = ChasingSpeed;
+
+			Cat->NotifyNoise();
 		}
 
 		GetBlackboardComponent()->SetValueAsBool("HasNoise", true);
 		GetBlackboardComponent()->SetValueAsVector("NoiseLocation", Stimulus.StimulusLocation);
 	
-		FTimerHandle ResetAgeTimer;
+		if (ResetAgeTimer.IsValid())
+			GetWorld()->GetTimerManager().ClearTimer(ResetAgeTimer);
+
 		GetWorld()->GetTimerManager().SetTimer(ResetAgeTimer, [this]() 
 			{
 				GetBlackboardComponent()->SetValueAsBool("HasNoise", false);
@@ -58,7 +62,7 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 				{
 					Cat->GetCharacterMovement()->MaxWalkSpeed = PatrolSpeed;
 				}
-			}, Stimulus.GetAge(), false);
+			}, GetBackToPatrolInSeconds, false);
 	}
 }
 

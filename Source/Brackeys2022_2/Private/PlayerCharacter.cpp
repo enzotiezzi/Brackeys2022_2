@@ -45,7 +45,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void APlayerCharacter::MakeNoise()
 {
-	if (SoundWidgetComponent)
+	if (SoundWidgetComponent->GetWidget())
 	{
         UWidgetAnimation* ShowAnim = GetAnimation(FText::FromString("ShowAnim"));
 
@@ -79,8 +79,6 @@ UWidgetAnimation* APlayerCharacter::GetAnimation(FText AnimationName)
 
                 if (WidgetAnim)
                 {
-                    GEngine->AddOnScreenDebugMessage(rand(), 1, FColor::Red, WidgetAnim->GetDisplayName().ToString());
-
                     if (WidgetAnim->GetDisplayName().CompareTo(AnimationName) == 0)
                         return WidgetAnim;
                 }
