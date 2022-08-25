@@ -5,6 +5,7 @@
 #include <GameFramework/CharacterMovementComponent.h>
 #include <MyPlayerController.h>
 #include <UMG/Public/Blueprint/UserWidget.h>
+#include <Kismet/GameplayStatics.h>
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -57,6 +58,11 @@ void APlayerCharacter::MakeNoise()
             SoundWidgetComponent->SetVisibility(true);
             SoundWidgetComponent->GetWidget()->BindToAnimationFinished(ShowAnim, AnimationFinishEvent);
             SoundWidgetComponent->GetWidget()->PlayAnimation(ShowAnim);
+
+            if (Noise)
+            {
+                UGameplayStatics::PlaySoundAtLocation(GetWorld(), Noise, GetActorLocation());
+            }
         }
 	}
 }

@@ -60,4 +60,12 @@ protected:
 
 	UFUNCTION()
 	void OnAnimationFinished();
+
+	/*
+	*
+	* SOUND
+	* 
+	*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+	USoundBase* Noise;
 };
