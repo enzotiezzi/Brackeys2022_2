@@ -52,7 +52,7 @@ void APlayerCharacter::MakeNoise()
         if (ShowAnim)
         {
             FWidgetAnimationDynamicEvent AnimationFinishEvent;
-            AnimationFinishEvent.BindUFunction(this, "OnAnimationFinished");
+            AnimationFinishEvent.BindDynamic(this, &APlayerCharacter::OnAnimationFinished);
 
             SoundWidgetComponent->SetVisibility(true);
             SoundWidgetComponent->GetWidget()->BindToAnimationFinished(ShowAnim, AnimationFinishEvent);
@@ -96,5 +96,4 @@ UWidgetAnimation* APlayerCharacter::GetAnimation(FText AnimationName)
 void APlayerCharacter::OnAnimationFinished()
 {
     SoundWidgetComponent->SetVisibility(false);
-
 }

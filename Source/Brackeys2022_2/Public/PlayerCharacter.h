@@ -58,5 +58,6 @@ protected:
 
 	UWidgetAnimation* GetAnimation(FText AnimationName);
 
+	UFUNCTION()
 	void OnAnimationFinished();
 };
