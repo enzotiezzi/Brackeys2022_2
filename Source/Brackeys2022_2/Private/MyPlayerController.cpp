@@ -13,9 +13,13 @@
 AMyPlayerController::AMyPlayerController()
 {
 	static ConstructorHelpers::FClassFinder<UUserWidget> PauseMenuWidgetFinder(TEXT("/Game/UI/WBP_PauseMenu"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> GameOverWidgetRefFinder(TEXT("/Game/UI/WBP_Lose"));
 
 	if(PauseMenuWidgetFinder.Succeeded())
 		PauseMenuWidgetRef = PauseMenuWidgetFinder.Class;
+
+	if (GameOverWidgetRefFinder.Succeeded())
+		GameOverWidgetRef = GameOverWidgetRefFinder.Class;
 
 	NoiseEmitterComponent = CreateDefaultSubobject<UPawnNoiseEmitterComponent>("NoiseEmitterComponent");
 }
@@ -39,6 +43,7 @@ void AMyPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	SetupPauseMenuWidget();
+	SetupGameOverWidget();
 }
 
 void AMyPlayerController::Tick(float DeltaSeconds)
@@ -132,13 +137,21 @@ void AMyPlayerController::SetupPauseMenuWidget()
 {
 	if (PauseMenuWidgetRef)
 	{
-		if (!PauseWidget)
-		{
-			PauseWidget = CreateWidget<UUserWidget>(GetWorld(), PauseMenuWidgetRef);
+		PauseWidget = CreateWidget<UUserWidget>(GetWorld(), PauseMenuWidgetRef);
 
-			UButton* ResumeButton = Cast<UButton>(PauseWidget->GetWidgetFromName("ResumeButton"));
-			ResumeButton->OnClicked.AddDynamic(this, &AMyPlayerController::ResumeGame);
-		}
+		UButton* ResumeButton = Cast<UButton>(PauseWidget->GetWidgetFromName("ResumeButton"));
+		ResumeButton->OnClicked.AddDynamic(this, &AMyPlayerController::ResumeGame);
+	}
+}
+
+void AMyPlayerController::SetupGameOverWidget()
+{
+	if (GameOverWidgetRef)
+	{
+		GameOverWidget = CreateWidget<UUserWidget>(GetWorld(), GameOverWidgetRef);
+	
+		UButton* RetryButton = Cast<UButton>(GameOverWidget->GetWidgetFromName("RetryButton"));
+		RetryButton->OnClicked.AddDynamic(this, &AMyPlayerController::RetryLevel);
 	}
 }
 
@@ -170,6 +183,37 @@ void AMyPlayerController::ResumeGame()
 		SetShowMouseCursor(false);
 		SetInputMode(FInputModeGameOnly());
 	}
+}
+
+void AMyPlayerController::CallGameOver()
+{
+	if (!GameOverWidget->IsInViewport())
+	{
+		GameOverWidget->AddToViewport();
+
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+
+		SetShowMouseCursor(true);
+
+		FInputModeUIOnly InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+		InputMode.SetWidgetToFocus(GameOverWidget->GetWidgetFromName("RetryButton")->TakeWidget());
+
+		SetInputMode(InputMode);
+	}
+}
+
+void AMyPlayerController::RetryLevel()
+{	
+	GameOverWidget->RemoveFromViewport();
+
+	UGameplayStatics::SetGamePaused(GetWorld(), false);
+
+	SetShowMouseCursor(false);
+
+	SetInputMode(FInputModeGameOnly());
+
+	UGameplayStatics::OpenLevel(GetWorld(), FName(GetWorld()->GetName()));
 }
 
 void AMyPlayerController::MakeNoise(APawn* PawnToMakeNoise)

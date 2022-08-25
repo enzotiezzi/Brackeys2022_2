@@ -32,6 +32,12 @@ public:
 	UFUNCTION()
 	void ResumeGame();
 
+	UFUNCTION()
+	void CallGameOver();
+
+	UFUNCTION()
+	void RetryLevel();
+
 protected:
 	void MoveForward(float AxisValue, APawn* PawnToMove);
 
@@ -54,9 +60,18 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UUserWidget> PauseMenuWidgetRef;
 
+	UPROPERTY(BlueprintReadWrite)
 	UUserWidget* PauseWidget;
 
 	void SetupPauseMenuWidget();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> GameOverWidgetRef;
+
+	UPROPERTY(BlueprintReadWrite)
+	UUserWidget* GameOverWidget;
+
+	void SetupGameOverWidget();
 
 	/*
 	*

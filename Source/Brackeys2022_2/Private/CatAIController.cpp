@@ -10,6 +10,9 @@
 #include <Perception/AISenseConfig_Hearing.h>
 #include <Cat.h>
 #include <GameFramework/CharacterMovementComponent.h>
+#include <Perception/AISense_Sight.h>
+#include <PlayerCharacter.h>
+#include <MyPlayerController.h>
 
 ACatAIController::ACatAIController()
 {
@@ -63,6 +66,21 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 					Cat->GetCharacterMovement()->MaxWalkSpeed = PatrolSpeed;
 				}
 			}, GetBackToPatrolInSeconds, false);
+	}
+	else
+	{
+		if (Stimulus.Type == UAISense::GetSenseID<UAISense_Sight>())
+		{
+			if (APlayerCharacter* Player = Cast<APlayerCharacter>(Actor))
+			{
+				if (AMyPlayerController* PlayerController = Cast<AMyPlayerController>(Player->GetController()))
+				{
+					GetWorld()->GetTimerManager().ClearTimer(ResetAgeTimer);
+
+					PlayerController->CallGameOver();
+				}
+			}
+		}
 	}
 }
 
