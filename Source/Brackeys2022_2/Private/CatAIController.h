@@ -30,6 +30,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
 	UBehaviorTree* BehaviorTree;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Speed")
+	float ChasingSpeed = 600;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Speed")
+	float PatrolSpeed = 200;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UAIPerceptionComponent* AIPerceptionComponent;
 };

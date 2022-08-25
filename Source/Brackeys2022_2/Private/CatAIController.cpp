@@ -8,6 +8,8 @@
 #include <AIModule/Classes/BehaviorTree/BlackboardComponent.h>
 #include <Perception/AISense_Hearing.h>
 #include <Perception/AISenseConfig_Hearing.h>
+#include <Cat.h>
+#include <GameFramework/CharacterMovementComponent.h>
 
 ACatAIController::ACatAIController()
 {
@@ -39,8 +41,11 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
 	if (Stimulus.Type == UAISense::GetSenseID<UAISense_Hearing>())
 	{
-		GEngine->AddOnScreenDebugMessage(rand(), 1, FColor::Yellow, "Noise");
-		
+		if (ACat* Cat = Cast<ACat>(GetPawn()))
+		{
+			Cat->GetCharacterMovement()->MaxWalkSpeed = ChasingSpeed;
+		}
+
 		GetBlackboardComponent()->SetValueAsBool("HasNoise", true);
 		GetBlackboardComponent()->SetValueAsVector("NoiseLocation", Stimulus.StimulusLocation);
 	
@@ -48,6 +53,11 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 		GetWorld()->GetTimerManager().SetTimer(ResetAgeTimer, [this]() 
 			{
 				GetBlackboardComponent()->SetValueAsBool("HasNoise", false);
+
+				if (ACat* Cat = Cast<ACat>(GetPawn()))
+				{
+					Cat->GetCharacterMovement()->MaxWalkSpeed = PatrolSpeed;
+				}
 			}, Stimulus.GetAge(), false);
 	}
 }
