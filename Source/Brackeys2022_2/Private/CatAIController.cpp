@@ -13,6 +13,7 @@
 #include <Perception/AISense_Sight.h>
 #include <PlayerCharacter.h>
 #include <MyPlayerController.h>
+#include <Kismet/GameplayStatics.h>
 
 ACatAIController::ACatAIController()
 {
@@ -73,7 +74,7 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 		{
 			if (APlayerCharacter* Player = Cast<APlayerCharacter>(Actor))
 			{
-				if (AMyPlayerController* PlayerController = Cast<AMyPlayerController>(Player->GetController()))
+				if (AMyPlayerController* PlayerController = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
 				{
 					GetWorld()->GetTimerManager().ClearTimer(ResetAgeTimer);
 
