@@ -4,6 +4,7 @@
 #include "PlayerCharacter.h"
 #include <GameFramework/CharacterMovementComponent.h>
 #include <MyPlayerController.h>
+#include <UMG/Public/Blueprint/UserWidget.h>
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -13,11 +14,13 @@ APlayerCharacter::APlayerCharacter()
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
+    SoundWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("SoundWidgetComponent");
 
 	SpringArmComponent->SetupAttachment(GetMesh());
 	CameraComponent->SetupAttachment(SpringArmComponent, USpringArmComponent::SocketName);
+    SoundWidgetComponent->SetupAttachment(GetRootComponent());
 
-	GetCharacterMovement()->bOrientRotationToMovement = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 }
 
 // Called when the game starts or when spawned
@@ -37,4 +40,61 @@ void APlayerCharacter::Tick(float DeltaTime)
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+
+void APlayerCharacter::MakeNoise()
+{
+	if (SoundWidgetComponent)
+	{
+        UWidgetAnimation* ShowAnim = GetAnimation(FText::FromString("ShowAnim"));
+
+        if (ShowAnim)
+        {
+            FWidgetAnimationDynamicEvent AnimationFinishEvent;
+            AnimationFinishEvent.BindUFunction(this, "OnAnimationFinished");
+
+            SoundWidgetComponent->SetVisibility(true);
+            SoundWidgetComponent->GetWidget()->BindToAnimationFinished(ShowAnim, AnimationFinishEvent);
+            SoundWidgetComponent->GetWidget()->PlayAnimation(ShowAnim);
+        }
+	}
+}
+
+UWidgetAnimation* APlayerCharacter::GetAnimation(FText AnimationName)
+{
+    UProperty* Prop = SoundWidgetComponent->GetWidget()->GetClass()->PropertyLink;
+
+    while (Prop)
+    {
+        if (Prop->GetClass() == UObjectProperty::StaticClass())
+        {
+            UObjectProperty* ObjectProp = Cast<UObjectProperty>(Prop);
+
+            if (ObjectProp->PropertyClass == UWidgetAnimation::StaticClass())
+            {
+                UObject* Object = ObjectProp->GetObjectPropertyValue_InContainer(SoundWidgetComponent->GetWidget());
+
+                UWidgetAnimation* WidgetAnim = Cast<UWidgetAnimation>(Object);
+
+                if (WidgetAnim)
+                {
+                    GEngine->AddOnScreenDebugMessage(rand(), 1, FColor::Red, WidgetAnim->GetDisplayName().ToString());
+
+                    if (WidgetAnim->GetDisplayName().CompareTo(AnimationName) == 0)
+                        return WidgetAnim;
+                }
+            }
+        }
+
+        Prop = Prop->PropertyLinkNext;
+    }
+
+    return nullptr;
+}
+
+void APlayerCharacter::OnAnimationFinished()
+{
+    SoundWidgetComponent->SetVisibility(false);
+
 }

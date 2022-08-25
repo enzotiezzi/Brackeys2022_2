@@ -174,6 +174,11 @@ void AMyPlayerController::ResumeGame()
 
 void AMyPlayerController::MakeNoise(APawn* PawnToMakeNoise)
 {
+	if (APlayerCharacter* CurrentCharacter = Cast<APlayerCharacter>(PawnToMakeNoise))
+	{
+		CurrentCharacter->MakeNoise();
+	}
+
 	NoiseEmitterComponent->MakeNoise(this, 1, PawnToMakeNoise->GetActorLocation());
 }
 

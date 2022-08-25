@@ -45,12 +45,6 @@ protected:
 
 	void MoveSidesRightAnalog(float AxisValue);
 
-	void MakeNoiseCurrentPawn();
-
-	void BelieverMakeNoise();
-
-	void MakeNoise(APawn* PawnToMakeNoise);
-
 	/*
 	*
 	* UI
@@ -64,6 +58,16 @@ protected:
 
 	void SetupPauseMenuWidget();
 
+	/*
+	*
+	* SOUND
+	*
+	*/
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	UPawnNoiseEmitterComponent* NoiseEmitterComponent;
+	UPawnNoiseEmitterComponent* NoiseEmitterComponent;	void MakeNoiseCurrentPawn();
+
+	void BelieverMakeNoise();
+
+	void MakeNoise(APawn* PawnToMakeNoise);
 };

@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <Components/WidgetComponent.h>
+#include <UMG/Public/Animation/WidgetAnimation.h>
 #include <Camera/CameraComponent.h>
 #include <GameFramework/SpringArmComponent.h>
 #include "CoreMinimal.h"
@@ -42,4 +44,19 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Camera")
 	UCameraComponent* CameraComponent;
+
+	void MakeNoise();
+
+protected:
+	/*
+	*
+	* UI
+	* 
+	*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
+	UWidgetComponent* SoundWidgetComponent;
+
+	UWidgetAnimation* GetAnimation(FText AnimationName);
+
+	void OnAnimationFinished();
 };
