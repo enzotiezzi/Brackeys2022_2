@@ -5,6 +5,8 @@
 #include <CatAIController.h>
 #include <AIModule/Classes/BehaviorTree/BlackboardComponent.h>
 #include <UMG/Public/Blueprint/UserWidget.h>
+#include <MyPlayerController.h>
+#include <Kismet/GameplayStatics.h>
 
 // Sets default values
 ACat::ACat()
@@ -13,8 +15,12 @@ ACat::ACat()
 	PrimaryActorTick.bCanEverTick = true;
 
     WidgetComponent = CreateDefaultSubobject<UWidgetComponent>("WidgetComponent");
+    SphereComponent = CreateDefaultSubobject<USphereComponent>("SphereComponent");
 
     WidgetComponent->SetupAttachment(GetRootComponent());
+    SphereComponent->SetupAttachment(GetRootComponent());
+
+    SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &ACat::OnSphereComponentBeginOverlap);
 }
 
 // Called when the game starts or when spawned
@@ -96,4 +102,18 @@ void ACat::NotifyNoise()
 void ACat::OnAnimationFinished()
 {
     WidgetComponent->SetVisibility(false);
+}
+
+void ACat::OnSphereComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+    if (APlayerCharacter* Player = Cast<APlayerCharacter>(OtherActor))
+    {
+        AMyPlayerController* PlayerController = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+
+        PlayerController->CallGameOver();
+    }
+
+    ACatAIController* CatAIController = Cast<ACatAIController>(GetController());
+
+    GetWorld()->GetTimerManager().ClearTimer(CatAIController->BackToPatrolTimer);
 }

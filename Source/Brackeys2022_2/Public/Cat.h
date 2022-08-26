@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <Components/SphereComponent.h>
 #include <Components/WidgetComponent.h>
 #include <UMG/Public/Animation/WidgetAnimation.h>
 #include <CatPathPoint.h>
@@ -34,7 +35,13 @@ public:
 
 	void NotifyNoise();
 
+	UFUNCTION()
+	void OnSphereComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	USphereComponent* SphereComponent;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 	float HearingRange = 1000;
 	

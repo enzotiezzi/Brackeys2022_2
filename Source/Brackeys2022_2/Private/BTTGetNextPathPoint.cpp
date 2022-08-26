@@ -7,6 +7,8 @@
 #include <Cat.h>
 #include <AIModule/Classes/BehaviorTree/BlackboardComponent.h>
 #include <CatPathPoint.h>
+#include <GameFramework/CharacterMovementComponent.h>
+#include <CatAIController.h>
 
 UBTTGetNextPathPoint::UBTTGetNextPathPoint()
 {
@@ -17,6 +19,11 @@ EBTNodeResult::Type UBTTGetNextPathPoint::ExecuteTask(UBehaviorTreeComponent& Ow
 {
 	if (ACat* Cat = Cast<ACat>(OwnerComp.GetAIOwner()->GetPawn()))
 	{
+		if (ACatAIController* CatAIController = Cast<ACatAIController>(OwnerComp.GetAIOwner()))
+		{
+			Cat->GetCharacterMovement()->MaxWalkSpeed = CatAIController->PatrolSpeed;
+		}
+
 		Cat->CurrentPathPoint++;
 
 		FVector NextPoint = Cat->Path[Cat->CurrentPathPoint % Cat->Path.Num()]->GetActorLocation();

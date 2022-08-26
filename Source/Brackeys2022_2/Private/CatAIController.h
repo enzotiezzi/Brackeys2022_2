@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <AIModule/Classes/Perception/AIPerceptionComponent.h>
+#include <PlayerCharacter.h>
 #include <AIModule/Classes/Perception/AIPerceptionTypes.h>
 #include <BehaviorTree/BehaviorTreeComponent.h>
 #include "CoreMinimal.h"
@@ -24,17 +26,13 @@ public:
 	UFUNCTION()
 	void OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus);
 
+	UFUNCTION()
+	void OnTargetInfoUpdated(const FActorPerceptionUpdateInfo& UpdateInfo);
+
 	void SetHearingRange(float HearingRange);
 
-protected:
 	UPROPERTY(BlueprintReadWrite)
-	FTimerHandle ResetAgeTimer;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
-	UBehaviorTree* BehaviorTree;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
-	float GetBackToPatrolInSeconds = 2;
+	FTimerHandle BackToPatrolTimer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Speed")
 	float ChasingSpeed = 600;
@@ -42,6 +40,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Speed")
 	float PatrolSpeed = 200;
 
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
+	UBehaviorTree* BehaviorTree;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	float GetBackToPatrolInSeconds = 2;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UAIPerceptionComponent* AIPerceptionComponent;
+
+	UPROPERTY(BlueprintReadWrite)
+	APlayerCharacter* CurrentPlayer;
 };

@@ -8,6 +8,7 @@
 #include <AIModule/Classes/BehaviorTree/BlackboardComponent.h>
 #include <Perception/AISense_Hearing.h>
 #include <Perception/AISenseConfig_Hearing.h>
+#include <Perception/AISenseConfig_Sight.h>
 #include <Cat.h>
 #include <GameFramework/CharacterMovementComponent.h>
 #include <Perception/AISense_Sight.h>
@@ -27,6 +28,7 @@ ACatAIController::ACatAIController()
 	AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>("AIPerceptionComponent");
 
 	AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ACatAIController::OnTargetUpdated);
+	AIPerceptionComponent->OnTargetPerceptionInfoUpdated.AddDynamic(this, &ACatAIController::OnTargetInfoUpdated);
 }
 
 void ACatAIController::BeginPlay()
@@ -55,16 +57,14 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 		GetBlackboardComponent()->SetValueAsBool("HasNoise", true);
 		GetBlackboardComponent()->SetValueAsVector("NoiseLocation", Stimulus.StimulusLocation);
 	
-		if (ResetAgeTimer.IsValid())
-			GetWorld()->GetTimerManager().ClearTimer(ResetAgeTimer);
+		if (BackToPatrolTimer.IsValid())
+			GetWorld()->GetTimerManager().ClearTimer(BackToPatrolTimer);
 
-		GetWorld()->GetTimerManager().SetTimer(ResetAgeTimer, [this]() 
+		GetWorld()->GetTimerManager().SetTimer(BackToPatrolTimer, [this]() 
 			{
-				GetBlackboardComponent()->SetValueAsBool("HasNoise", false);
-
-				if (ACat* Cat = Cast<ACat>(GetPawn()))
+				if (BackToPatrolTimer.IsValid())
 				{
-					Cat->GetCharacterMovement()->MaxWalkSpeed = PatrolSpeed;
+					GetBlackboardComponent()->SetValueAsBool("HasNoise", false);
 				}
 			}, GetBackToPatrolInSeconds, false);
 	}
@@ -72,17 +72,27 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 	{
 		if (Stimulus.Type == UAISense::GetSenseID<UAISense_Sight>())
 		{
-			if (APlayerCharacter* Player = Cast<APlayerCharacter>(Actor))
+			if (!CurrentPlayer)
 			{
-				if (AMyPlayerController* PlayerController = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
+				if (APlayerCharacter* Player = Cast<APlayerCharacter>(Actor))
 				{
-					GetWorld()->GetTimerManager().ClearTimer(ResetAgeTimer);
+					if (AMyPlayerController* PlayerController = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
+					{
+						CurrentPlayer = Player;
 
-					PlayerController->CallGameOver();
+						GetBlackboardComponent()->SetValueAsObject("Target", CurrentPlayer);
+					}
 				}
 			}
 		}
 	}
+}
+
+void ACatAIController::OnTargetInfoUpdated(const FActorPerceptionUpdateInfo& UpdateInfo)
+{
+	FActorPerceptionBlueprintInfo Info;
+
+	AIPerceptionComponent->GetActorsPerception(CurrentPlayer, Info);
 }
 
 void ACatAIController::SetHearingRange(float HearingRange)
