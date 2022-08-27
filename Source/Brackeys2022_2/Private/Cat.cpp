@@ -7,6 +7,7 @@
 #include <UMG/Public/Blueprint/UserWidget.h>
 #include <MyPlayerController.h>
 #include <Kismet/GameplayStatics.h>
+#include <Components/TextBlock.h>
 
 // Sets default values
 ACat::ACat()
@@ -78,7 +79,7 @@ UWidgetAnimation* ACat::GetAnimation(FText AnimationName)
     return nullptr;
 }
 
-void ACat::NotifyNoise()
+void ACat::NotifySense(FText TextSense)
 {
     UWidgetAnimation* ShowAnim = GetAnimation(FText::FromString("ShowAnim"));
 
@@ -86,16 +87,23 @@ void ACat::NotifyNoise()
     {
         FWidgetAnimationDynamicEvent AnimationFinishEvent;
         AnimationFinishEvent.BindDynamic(this, &ACat::OnAnimationFinished);
-       
+        
+        WidgetComponent->GetWidget()->StopAllAnimations();
         WidgetComponent->SetVisibility(true);
         WidgetComponent->GetWidget()->BindToAnimationFinished(ShowAnim, AnimationFinishEvent);
-        
-        FTimerHandle AnimationTimerHandle;
-        GetWorld()->GetTimerManager().SetTimer(AnimationTimerHandle, [this, ShowAnim]()
+
+        UTextBlock* TextBlock = Cast<UTextBlock>(WidgetComponent->GetWidget()->GetWidgetFromName("TextBlock_0"));
+
+        if (TextBlock)
+            TextBlock->SetText(TextSense);
+
+        if (AnimationTimerHandle.IsValid())
+            GetWorld()->GetTimerManager().ClearTimer(AnimationTimerHandle);
+
+        GetWorld()->GetTimerManager().SetTimer(AnimationTimerHandle, [this, ShowAnim, TextSense]()
             {
-                WidgetComponent->GetWidget()->StopAnimation(ShowAnim);
                 WidgetComponent->GetWidget()->PlayAnimation(ShowAnim);
-            }, .1, false);
+            }, GetWorld()->GetDeltaSeconds(), false);
     }
 }
 

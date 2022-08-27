@@ -28,7 +28,6 @@ ACatAIController::ACatAIController()
 	AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>("AIPerceptionComponent");
 
 	AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ACatAIController::OnTargetUpdated);
-	AIPerceptionComponent->OnTargetPerceptionInfoUpdated.AddDynamic(this, &ACatAIController::OnTargetInfoUpdated);
 }
 
 void ACatAIController::BeginPlay()
@@ -43,6 +42,11 @@ void ACatAIController::BeginPlay()
 	}
 }
 
+void ACatAIController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+}
+
 void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
 	if (Stimulus.Type == UAISense::GetSenseID<UAISense_Hearing>() && Stimulus.GetAge() == 0.0)
@@ -51,7 +55,7 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 		{
 			Cat->GetCharacterMovement()->MaxWalkSpeed = ChasingSpeed;
 
-			Cat->NotifyNoise();
+			Cat->NotifySense(FText::FromString("?"));
 		}
 
 		GetBlackboardComponent()->SetValueAsBool("HasNoise", true);
@@ -78,21 +82,40 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 				{
 					if (AMyPlayerController* PlayerController = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
 					{
+						if (ACat* Cat = Cast<ACat>(GetPawn()))
+						{
+							Cat->GetCharacterMovement()->MaxWalkSpeed = ChasingSpeed;
+
+							Cat->NotifySense(FText::FromString("!"));
+						}
+
 						CurrentPlayer = Player;
 
 						GetBlackboardComponent()->SetValueAsObject("Target", CurrentPlayer);
 					}
 				}
 			}
+			else
+			{
+				FActorPerceptionBlueprintInfo Info;
+
+				bool Success = AIPerceptionComponent->GetActorsPerception(CurrentPlayer, Info);
+
+				if (Success)
+				{
+					if (Info.LastSensedStimuli.Num() > 0)
+					{
+						if (!Info.LastSensedStimuli[0].WasSuccessfullySensed())
+						{
+							CurrentPlayer = nullptr;
+
+							GetBlackboardComponent()->SetValueAsObject("Target", CurrentPlayer);
+						}
+					}
+				}
+			}
 		}
 	}
-}
-
-void ACatAIController::OnTargetInfoUpdated(const FActorPerceptionUpdateInfo& UpdateInfo)
-{
-	FActorPerceptionBlueprintInfo Info;
-
-	AIPerceptionComponent->GetActorsPerception(CurrentPlayer, Info);
 }
 
 void ACatAIController::SetHearingRange(float HearingRange)

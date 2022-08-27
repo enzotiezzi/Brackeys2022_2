@@ -23,11 +23,10 @@ public:
 
 	virtual void BeginPlay() override;
 
-	UFUNCTION()
-	void OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus);
+	virtual void Tick(float DeltaSeconds) override;
 
 	UFUNCTION()
-	void OnTargetInfoUpdated(const FActorPerceptionUpdateInfo& UpdateInfo);
+	void OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus);
 
 	void SetHearingRange(float HearingRange);
 
