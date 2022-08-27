@@ -354,8 +354,11 @@ void AMyPlayerController::PlayGame()
 	SetShowMouseCursor(false);
 
 	SetInputMode(FInputModeGameOnly());
-
-	UGameplayStatics::OpenLevel(GetWorld(), FName("Level1"));
+	
+	if (GetWorld()->GetName() == "MenuLevel")
+		UGameplayStatics::OpenLevel(GetWorld(), FName("Level1"));
+	else
+		RetryLevel();
 }
 
 void AMyPlayerController::ShowCredits() 

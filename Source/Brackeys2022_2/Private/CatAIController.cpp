@@ -82,25 +82,22 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 
 			GetBlackboardComponent()->SetValueAsBool("HasNoise", false);
 
-			if (!CurrentPlayer)
+			if (Stimulus.WasSuccessfullySensed())
 			{
-				if (Stimulus.WasSuccessfullySensed())
+				if (APlayerCharacter* Player = Cast<APlayerCharacter>(Actor))
 				{
-					if (APlayerCharacter* Player = Cast<APlayerCharacter>(Actor))
+					if (AMyPlayerController* PlayerController = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
 					{
-						if (AMyPlayerController* PlayerController = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
+						if (ACat* Cat = Cast<ACat>(GetPawn()))
 						{
-							if (ACat* Cat = Cast<ACat>(GetPawn()))
-							{
-								Cat->GetCharacterMovement()->MaxWalkSpeed = ChasingSpeed;
+							Cat->GetCharacterMovement()->MaxWalkSpeed = ChasingSpeed;
 
-								Cat->NotifySense(FText::FromString("!"));
-							}
-
-							CurrentPlayer = Player;
-
-							GetBlackboardComponent()->SetValueAsObject("Target", CurrentPlayer);
+							Cat->NotifySense(FText::FromString("!"));
 						}
+
+						CurrentPlayer = Player;
+
+						GetBlackboardComponent()->SetValueAsObject("Target", CurrentPlayer);
 					}
 				}
 			}
@@ -108,18 +105,17 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 			{
 				FActorPerceptionBlueprintInfo Info;
 
-				bool Success = AIPerceptionComponent->GetActorsPerception(CurrentPlayer, Info);
+				AIPerceptionComponent->GetActorsPerception(CurrentPlayer, Info);
 
-				if (Success)
+				if (Info.LastSensedStimuli.Num() > 0)
 				{
-					if (Info.LastSensedStimuli.Num() > 0)
+					if (!Info.LastSensedStimuli[0].WasSuccessfullySensed())
 					{
-						if (!Info.LastSensedStimuli[0].WasSuccessfullySensed())
-						{
-							CurrentPlayer = nullptr;
+						GEngine->AddOnScreenDebugMessage(rand(), 1, FColor::Red, "Miss");
 
-							GetBlackboardComponent()->SetValueAsObject("Target", CurrentPlayer);
-						}
+						CurrentPlayer = nullptr;
+
+						GetBlackboardComponent()->SetValueAsObject("Target", CurrentPlayer);
 					}
 				}
 			}
