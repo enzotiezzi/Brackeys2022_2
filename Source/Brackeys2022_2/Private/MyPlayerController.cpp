@@ -182,15 +182,6 @@ void AMyPlayerController::SetupMainMenuWidget()
 	{
 		MainMenuWidget = CreateWidget<UUserWidget>(GetWorld(), MainMenuWidgetRef);
 
-		UButton* PlayButton = Cast<UButton>(MainMenuWidget->GetWidgetFromName("PlayButton"));
-		PlayButton->OnClicked.AddDynamic(this, &AMyPlayerController::PlayGame);
-
-		UButton* CreditsButton = Cast<UButton>(MainMenuWidget->GetWidgetFromName("CreditsButton"));
-		CreditsButton->OnClicked.AddDynamic(this, &AMyPlayerController::ShowCredits);
-
-		UButton* QuitButton = Cast<UButton>(MainMenuWidget->GetWidgetFromName("QuitButton"));
-		QuitButton->OnClicked.AddDynamic(this, &AMyPlayerController::QuitGame);
-
 		StartAnim = GetAnimation(FText::FromString("StartAnim"));
 
 		FWidgetAnimationDynamicEvent StartAnimAnimationEvent;
@@ -216,11 +207,19 @@ void AMyPlayerController::OnStartAnimFinished()
 		MainMenuWidget->PlayAnimation(ConstantAnim,0, 0);
 	}
 
+	UButton* PlayButton = Cast<UButton>(MainMenuWidget->GetWidgetFromName("PlayButton"));
+	UButton* CreditsButton = Cast<UButton>(MainMenuWidget->GetWidgetFromName("CreditsButton"));
+	UButton* QuitButton = Cast<UButton>(MainMenuWidget->GetWidgetFromName("QuitButton"));
+
+	PlayButton->OnClicked.AddDynamic(this, &AMyPlayerController::PlayGame);
+	CreditsButton->OnClicked.AddDynamic(this, &AMyPlayerController::ShowCredits);
+	QuitButton->OnClicked.AddDynamic(this, &AMyPlayerController::QuitGame);
+
 	SetShowMouseCursor(true);
 
 	FInputModeUIOnly InputMode;
 	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
-	InputMode.SetWidgetToFocus(MainMenuWidget->GetWidgetFromName("PlayButton")->TakeWidget());
+	InputMode.SetWidgetToFocus(PlayButton->TakeWidget());
 
 	SetInputMode(InputMode);
 }
@@ -230,6 +229,14 @@ void AMyPlayerController::PlayIntro()
 {
 	if (StartAnim) 
 	{
+		UButton* PlayButton = Cast<UButton>(MainMenuWidget->GetWidgetFromName("PlayButton"));
+		UButton* CreditsButton = Cast<UButton>(MainMenuWidget->GetWidgetFromName("CreditsButton"));
+		UButton* QuitButton = Cast<UButton>(MainMenuWidget->GetWidgetFromName("QuitButton"));
+
+		PlayButton->OnClicked.Clear();
+		CreditsButton->OnClicked.Clear();
+		QuitButton->OnClicked.Clear();
+
 		SetShowMouseCursor(false);
 
 		MainMenuWidget->StopAllAnimations();
@@ -280,6 +287,14 @@ void AMyPlayerController::ShowMainMenu()
 
 		if (GameOverWidget->IsInViewport())
 			GameOverWidget->RemoveFromViewport();
+
+		UButton* PlayButton = Cast<UButton>(MainMenuWidget->GetWidgetFromName("PlayButton"));
+		UButton* CreditsButton = Cast<UButton>(MainMenuWidget->GetWidgetFromName("CreditsButton"));
+		UButton* QuitButton = Cast<UButton>(MainMenuWidget->GetWidgetFromName("QuitButton"));
+
+		PlayButton->OnClicked.AddDynamic(this, &AMyPlayerController::PlayGame);
+		CreditsButton->OnClicked.AddDynamic(this, &AMyPlayerController::ShowCredits);
+		QuitButton->OnClicked.AddDynamic(this, &AMyPlayerController::QuitGame);
 
 		MainMenuWidget->AddToViewport(1);
 

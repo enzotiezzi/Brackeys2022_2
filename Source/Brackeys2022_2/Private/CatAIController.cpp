@@ -49,7 +49,7 @@ void ACatAIController::Tick(float DeltaSeconds)
 
 void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
-	if (Stimulus.Type == UAISense::GetSenseID<UAISense_Hearing>() && Stimulus.GetAge() == 0.0)
+	if (Stimulus.Type == UAISense::GetSenseID<UAISense_Hearing>() && Stimulus.GetAge() == 0.0 && Stimulus.WasSuccessfullySensed())
 	{
 		if (ACat* Cat = Cast<ACat>(GetPawn()))
 		{
@@ -68,6 +68,8 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 			{
 				if (BackToPatrolTimer.IsValid())
 				{
+					GetWorld()->GetTimerManager().ClearTimer(BackToPatrolTimer);
+
 					GetBlackboardComponent()->SetValueAsBool("HasNoise", false);
 				}
 			}, GetBackToPatrolInSeconds, false);
@@ -76,7 +78,11 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 	{
 		if (Stimulus.Type == UAISense::GetSenseID<UAISense_Sight>())
 		{
-			if (!CurrentPlayer)
+			GetWorld()->GetTimerManager().ClearTimer(BackToPatrolTimer);
+
+			GetBlackboardComponent()->SetValueAsBool("HasNoise", false);
+
+			if (!CurrentPlayer && Stimulus.WasSuccessfullySensed())
 			{
 				if (APlayerCharacter* Player = Cast<APlayerCharacter>(Actor))
 				{
@@ -99,7 +105,7 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 			{
 				FActorPerceptionBlueprintInfo Info;
 
-				bool Success = AIPerceptionComponent->GetActorsPerception(CurrentPlayer, Info);
+				bool Success = AIPerceptionComponent->GetActorsPerception(Actor, Info);
 
 				if (Success)
 				{
