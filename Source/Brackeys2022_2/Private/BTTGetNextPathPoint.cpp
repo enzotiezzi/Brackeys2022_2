@@ -24,9 +24,16 @@ EBTNodeResult::Type UBTTGetNextPathPoint::ExecuteTask(UBehaviorTreeComponent& Ow
 			Cat->GetCharacterMovement()->MaxWalkSpeed = CatAIController->PatrolSpeed;
 		}
 
+		int Mod = Cat->CurrentPathPoint % Cat->Path.Num();
+
+		GEngine->AddOnScreenDebugMessage(rand(), 1, FColor::Red, FString::FromInt(Mod));
+
+		if (Mod == 0)
+			Cat->SetActorRotation(Cat->Path[0]->GetActorRotation());
+
 		Cat->CurrentPathPoint++;
 
-		FVector NextPoint = Cat->Path[Cat->CurrentPathPoint % Cat->Path.Num()]->GetActorLocation();
+		FVector NextPoint = Cat->Path[Mod]->GetActorLocation();
 
 		OwnerComp.GetBlackboardComponent()->SetValueAsVector("PathPoint", NextPoint);
 
