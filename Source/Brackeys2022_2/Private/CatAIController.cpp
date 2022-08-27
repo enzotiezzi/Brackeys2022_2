@@ -78,12 +78,12 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 	{
 		if (Stimulus.Type == UAISense::GetSenseID<UAISense_Sight>())
 		{
-			GetWorld()->GetTimerManager().ClearTimer(BackToPatrolTimer);
-
-			GetBlackboardComponent()->SetValueAsBool("HasNoise", false);
-
 			if (Stimulus.WasSuccessfullySensed())
 			{
+				GetWorld()->GetTimerManager().ClearTimer(BackToPatrolTimer);
+
+				GetBlackboardComponent()->SetValueAsBool("HasNoise", false);
+
 				if (APlayerCharacter* Player = Cast<APlayerCharacter>(Actor))
 				{
 					if (AMyPlayerController* PlayerController = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
@@ -111,8 +111,6 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 				{
 					if (!Info.LastSensedStimuli[0].WasSuccessfullySensed())
 					{
-						GEngine->AddOnScreenDebugMessage(rand(), 1, FColor::Red, "Miss");
-
 						CurrentPlayer = nullptr;
 
 						GetBlackboardComponent()->SetValueAsObject("Target", CurrentPlayer);
