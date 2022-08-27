@@ -14,12 +14,16 @@ AMyPlayerController::AMyPlayerController()
 {
 	static ConstructorHelpers::FClassFinder<UUserWidget> PauseMenuWidgetFinder(TEXT("/Game/UI/WBP_PauseMenu"));
 	static ConstructorHelpers::FClassFinder<UUserWidget> GameOverWidgetRefFinder(TEXT("/Game/UI/WBP_Lose"));
+	static ConstructorHelpers::FClassFinder<UUserWidget> MainMenuWidgetRefFinder(TEXT("/Game/UI/WBP_MainMenu"));
 
 	if(PauseMenuWidgetFinder.Succeeded())
 		PauseMenuWidgetRef = PauseMenuWidgetFinder.Class;
 
 	if (GameOverWidgetRefFinder.Succeeded())
 		GameOverWidgetRef = GameOverWidgetRefFinder.Class;
+
+	if (MainMenuWidgetRefFinder.Succeeded())
+		MainMenuWidgetRef = MainMenuWidgetRefFinder.Class;
 
 	NoiseEmitterComponent = CreateDefaultSubobject<UPawnNoiseEmitterComponent>("NoiseEmitterComponent");
 }
@@ -44,6 +48,14 @@ void AMyPlayerController::BeginPlay()
 
 	SetupPauseMenuWidget();
 	SetupGameOverWidget();
+	SetupMainMenuWidget();
+
+	if (GetWorld()->GetName() == "TestLevel")
+	{
+		PauseGame();
+		ShowMainMenu();
+		PlayIntro();
+	}
 }
 
 void AMyPlayerController::Tick(float DeltaSeconds)
@@ -141,6 +153,12 @@ void AMyPlayerController::SetupPauseMenuWidget()
 
 		UButton* ResumeButton = Cast<UButton>(PauseWidget->GetWidgetFromName("ResumeButton"));
 		ResumeButton->OnClicked.AddDynamic(this, &AMyPlayerController::ResumeGame);
+		
+		UButton* RetryButton = Cast<UButton>(PauseWidget->GetWidgetFromName("RetryButton"));
+		RetryButton->OnClicked.AddDynamic(this, &AMyPlayerController::RetryLevel);
+
+		UButton* MenuButton = Cast<UButton>(PauseWidget->GetWidgetFromName("MenuButton"));
+		MenuButton->OnClicked.AddDynamic(this, &AMyPlayerController::ShowMainMenu);
 	}
 }
 
@@ -152,8 +170,70 @@ void AMyPlayerController::SetupGameOverWidget()
 	
 		UButton* RetryButton = Cast<UButton>(GameOverWidget->GetWidgetFromName("RetryButton"));
 		RetryButton->OnClicked.AddDynamic(this, &AMyPlayerController::RetryLevel);
+
+		UButton* MenuButton = Cast<UButton>(GameOverWidget->GetWidgetFromName("MenuButton"));
+		MenuButton->OnClicked.AddDynamic(this, &AMyPlayerController::ShowMainMenu);
 	}
 }
+
+void AMyPlayerController::SetupMainMenuWidget()
+{
+	if (MainMenuWidgetRef)
+	{
+		MainMenuWidget = CreateWidget<UUserWidget>(GetWorld(), MainMenuWidgetRef);
+
+		UButton* PlayButton = Cast<UButton>(MainMenuWidget->GetWidgetFromName("PlayButton"));
+		PlayButton->OnClicked.AddDynamic(this, &AMyPlayerController::PlayGame);
+
+		UButton* CreditsButton = Cast<UButton>(MainMenuWidget->GetWidgetFromName("CreditsButton"));
+		CreditsButton->OnClicked.AddDynamic(this, &AMyPlayerController::ShowCredits);
+
+		UButton* QuitButton = Cast<UButton>(MainMenuWidget->GetWidgetFromName("QuitButton"));
+		QuitButton->OnClicked.AddDynamic(this, &AMyPlayerController::QuitGame);
+
+		StartAnim = GetAnimation(FText::FromString("StartAnim"));
+
+		FWidgetAnimationDynamicEvent StartAnimAnimationEvent;
+		StartAnimAnimationEvent.BindDynamic(this, &AMyPlayerController::OnStartAnimFinished);
+
+		MainMenuWidget->BindToAnimationFinished(StartAnim, StartAnimAnimationEvent);
+
+		ConstantAnim = GetAnimation(FText::FromString("ConstantAnim"));
+	}
+}
+
+void AMyPlayerController::OnStartAnimFinished()
+{
+	if (MainMenuSound)
+	{
+		UGameplayStatics::SpawnSound2D(GetWorld(), MainMenuSound);
+	}
+
+	if(ConstantAnim)
+	{
+		MainMenuWidget->PlayAnimation(ConstantAnim,0, 0);
+	}
+
+	SetShowMouseCursor(true);
+
+	FInputModeUIOnly InputMode;
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+	InputMode.SetWidgetToFocus(MainMenuWidget->GetWidgetFromName("PlayButton")->TakeWidget());
+
+	SetInputMode(InputMode);
+}
+
+
+void AMyPlayerController::PlayIntro()
+{
+	if (StartAnim) 
+	{
+		SetShowMouseCursor(false);
+
+		MainMenuWidget->PlayAnimation(StartAnim);
+	}
+}
+
 
 void AMyPlayerController::PauseGame()
 {
@@ -179,9 +259,43 @@ void AMyPlayerController::ResumeGame()
 	if (PauseWidget->IsInViewport())
 	{
 		PauseWidget->RemoveFromViewport();
+
 		UGameplayStatics::SetGamePaused(GetWorld(), false);
+
 		SetShowMouseCursor(false);
+
 		SetInputMode(FInputModeGameOnly());
+	}
+}
+
+void AMyPlayerController::ShowMainMenu()
+{
+	if (!MainMenuWidget->IsInViewport()) 
+	{
+		if (PauseWidget->IsInViewport())
+			PauseWidget->RemoveFromViewport();
+
+		if (GameOverWidget->IsInViewport())
+			GameOverWidget->RemoveFromViewport();
+
+		MainMenuWidget->AddToViewport(1);
+
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+
+		SetShowMouseCursor(true);
+
+		MainMenuWidget->StopAllAnimations();
+
+		if (ConstantAnim)
+		{
+			MainMenuWidget->PlayAnimation(ConstantAnim, 0, 0);
+		}
+
+		FInputModeUIOnly InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+		InputMode.SetWidgetToFocus(MainMenuWidget->GetWidgetFromName("PlayButton")->TakeWidget());
+
+		SetInputMode(InputMode);
 	}
 }
 
@@ -216,6 +330,27 @@ void AMyPlayerController::RetryLevel()
 	UGameplayStatics::OpenLevel(GetWorld(), FName(GetWorld()->GetName()));
 }
 
+void AMyPlayerController::PlayGame()
+{
+	UGameplayStatics::SetGamePaused(GetWorld(), false);
+
+	SetShowMouseCursor(false);
+
+	SetInputMode(FInputModeGameOnly());
+
+	UGameplayStatics::OpenLevel(GetWorld(), FName("Level1"));
+}
+
+void AMyPlayerController::ShowCredits() 
+{
+	GEngine->AddOnScreenDebugMessage(rand(), 1, FColor::Red, "Credits");
+}
+
+void AMyPlayerController::QuitGame()
+{
+	UKismetSystemLibrary::QuitGame(GetWorld(), this, EQuitPreference::Quit, true);
+}
+
 void AMyPlayerController::MakeNoise(APawn* PawnToMakeNoise)
 {
 	if (APlayerCharacter* CurrentCharacter = Cast<APlayerCharacter>(PawnToMakeNoise))
@@ -242,4 +377,34 @@ void AMyPlayerController::BelieverMakeNoise()
 			MakeNoise(Player2Character);
 		}
 	}
+}
+
+UWidgetAnimation* AMyPlayerController::GetAnimation(FText AnimationName)
+{
+	UProperty* Prop = MainMenuWidget->GetClass()->PropertyLink;
+
+	while (Prop)
+	{
+		if (Prop->GetClass() == UObjectProperty::StaticClass())
+		{
+			UObjectProperty* ObjectProp = Cast<UObjectProperty>(Prop);
+
+			if (ObjectProp->PropertyClass == UWidgetAnimation::StaticClass())
+			{
+				UObject* Object = ObjectProp->GetObjectPropertyValue_InContainer(MainMenuWidget);
+
+				UWidgetAnimation* WidgetAnim = Cast<UWidgetAnimation>(Object);
+
+				if (WidgetAnim)
+				{
+					if (WidgetAnim->GetDisplayName().CompareTo(AnimationName) == 0)
+						return WidgetAnim;
+				}
+			}
+		}
+
+		Prop = Prop->PropertyLinkNext;
+	}
+
+	return nullptr;
 }

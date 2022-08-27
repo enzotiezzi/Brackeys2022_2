@@ -38,6 +38,20 @@ public:
 	UFUNCTION()
 	void RetryLevel();
 
+	UFUNCTION()
+	void PlayGame();
+
+	UFUNCTION()
+	void ShowCredits();
+
+	UFUNCTION()
+	void QuitGame();
+
+	UFUNCTION()
+	void ShowMainMenu();
+
+	void PlayIntro();
+
 protected:
 	void MoveForward(float AxisValue, APawn* PawnToMove);
 
@@ -73,6 +87,25 @@ protected:
 
 	void SetupGameOverWidget();
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> MainMenuWidgetRef;
+
+	UPROPERTY(BlueprintReadWrite)
+	UUserWidget* MainMenuWidget;
+
+	void SetupMainMenuWidget();
+
+	UPROPERTY(BlueprintReadWrite)
+	UWidgetAnimation* StartAnim;
+
+	UPROPERTY(BlueprintReadWrite)
+	UWidgetAnimation* ConstantAnim;
+
+	UWidgetAnimation* GetAnimation(FText AnimationName);
+
+	UFUNCTION()
+	void OnStartAnimFinished();
+
 	/*
 	*
 	* SOUND
@@ -84,5 +117,8 @@ protected:
 
 	void BelieverMakeNoise();
 
-	void MakeNoise(APawn* PawnToMakeNoise);
+	void MakeNoise(APawn* PawnToMakeNoise);	
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+	USoundBase* MainMenuSound;
 };
