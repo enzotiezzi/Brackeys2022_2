@@ -50,7 +50,7 @@ void AMyPlayerController::BeginPlay()
 	SetupGameOverWidget();
 	SetupMainMenuWidget();
 
-	if (GetWorld()->GetName() == "TestLevel")
+	if (GetWorld()->GetName() == "MenuLevel")
 	{
 		PauseGame();
 		ShowMainMenu();
