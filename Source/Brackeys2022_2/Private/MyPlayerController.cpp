@@ -204,6 +204,8 @@ void AMyPlayerController::SetupMainMenuWidget()
 
 void AMyPlayerController::OnStartAnimFinished()
 {
+	MainMenuWidget->StopAllAnimations();
+
 	if (MainMenuSound)
 	{
 		UGameplayStatics::SpawnSound2D(GetWorld(), MainMenuSound);
@@ -230,6 +232,7 @@ void AMyPlayerController::PlayIntro()
 	{
 		SetShowMouseCursor(false);
 
+		MainMenuWidget->StopAllAnimations();
 		MainMenuWidget->PlayAnimation(StartAnim);
 	}
 }
