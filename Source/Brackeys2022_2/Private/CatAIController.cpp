@@ -82,22 +82,25 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 
 			GetBlackboardComponent()->SetValueAsBool("HasNoise", false);
 
-			if (!CurrentPlayer && Stimulus.WasSuccessfullySensed())
+			if (!CurrentPlayer)
 			{
-				if (APlayerCharacter* Player = Cast<APlayerCharacter>(Actor))
+				if (Stimulus.WasSuccessfullySensed())
 				{
-					if (AMyPlayerController* PlayerController = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
+					if (APlayerCharacter* Player = Cast<APlayerCharacter>(Actor))
 					{
-						if (ACat* Cat = Cast<ACat>(GetPawn()))
+						if (AMyPlayerController* PlayerController = Cast<AMyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
 						{
-							Cat->GetCharacterMovement()->MaxWalkSpeed = ChasingSpeed;
+							if (ACat* Cat = Cast<ACat>(GetPawn()))
+							{
+								Cat->GetCharacterMovement()->MaxWalkSpeed = ChasingSpeed;
 
-							Cat->NotifySense(FText::FromString("!"));
+								Cat->NotifySense(FText::FromString("!"));
+							}
+
+							CurrentPlayer = Player;
+
+							GetBlackboardComponent()->SetValueAsObject("Target", CurrentPlayer);
 						}
-
-						CurrentPlayer = Player;
-
-						GetBlackboardComponent()->SetValueAsObject("Target", CurrentPlayer);
 					}
 				}
 			}
@@ -105,7 +108,7 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 			{
 				FActorPerceptionBlueprintInfo Info;
 
-				bool Success = AIPerceptionComponent->GetActorsPerception(Actor, Info);
+				bool Success = AIPerceptionComponent->GetActorsPerception(CurrentPlayer, Info);
 
 				if (Success)
 				{

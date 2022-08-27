@@ -244,7 +244,6 @@ void AMyPlayerController::PlayIntro()
 	}
 }
 
-
 void AMyPlayerController::PauseGame()
 {
 	if (PauseWidget)
