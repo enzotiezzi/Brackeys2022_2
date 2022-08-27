@@ -59,6 +59,11 @@ void APlayerCharacter::MakeNoise()
             SoundWidgetComponent->GetWidget()->BindToAnimationFinished(ShowAnim, AnimationFinishEvent);
             SoundWidgetComponent->GetWidget()->PlayAnimation(ShowAnim);
 
+            if (NoiseAnimMontage)
+            {
+                PlayAnimMontage(NoiseAnimMontage);
+            }
+
             if (Noise)
             {
                 UGameplayStatics::PlaySoundAtLocation(GetWorld(), Noise, GetActorLocation());

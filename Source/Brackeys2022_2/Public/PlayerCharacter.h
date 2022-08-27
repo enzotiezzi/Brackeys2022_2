@@ -68,4 +68,7 @@ protected:
 	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
 	USoundBase* Noise;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* NoiseAnimMontage;
 };
