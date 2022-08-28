@@ -95,6 +95,8 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 							Cat->NotifySense(FText::FromString("!"));
 						}
 
+						Player->NotifyFound();
+
 						CurrentPlayer = Player;
 
 						GetBlackboardComponent()->SetValueAsObject("Target", CurrentPlayer);

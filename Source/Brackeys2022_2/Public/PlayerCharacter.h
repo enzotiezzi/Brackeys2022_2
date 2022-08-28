@@ -47,6 +47,8 @@ public:
 
 	void MakeNoise();
 
+	void NotifyFound();
+
 protected:
 	/*
 	*
@@ -71,4 +73,7 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation")
 	UAnimMontage* NoiseAnimMontage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* FoundAnimMontage;
 };
