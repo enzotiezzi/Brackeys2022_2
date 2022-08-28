@@ -136,3 +136,10 @@ void ACatAIController::SetHearingRange(float HearingRange)
 
 	AIPerceptionComponent->ConfigureSense(*HearingConfig);
 }
+
+void ACatAIController::EndPlay(EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	GetWorld()->GetTimerManager().ClearTimer(BackToPatrolTimer);
+}

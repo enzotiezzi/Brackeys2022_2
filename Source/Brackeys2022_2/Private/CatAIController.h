@@ -23,6 +23,8 @@ public:
 
 	virtual void BeginPlay() override;
 
+	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
+
 	virtual void Tick(float DeltaSeconds) override;
 
 	UFUNCTION()

@@ -102,7 +102,10 @@ void ACat::NotifySense(FText TextSense)
 
         GetWorld()->GetTimerManager().SetTimer(AnimationTimerHandle, [this, ShowAnim, TextSense]()
             {
-                WidgetComponent->GetWidget()->PlayAnimation(ShowAnim);
+                if (WidgetComponent->GetWidget() && ShowAnim)
+                {
+                    WidgetComponent->GetWidget()->PlayAnimation(ShowAnim);
+                }
             }, GetWorld()->GetDeltaSeconds(), false);
     }
 }
@@ -124,4 +127,11 @@ void ACat::OnSphereComponentBeginOverlap(UPrimitiveComponent* OverlappedComponen
     ACatAIController* CatAIController = Cast<ACatAIController>(GetController());
 
     GetWorld()->GetTimerManager().ClearTimer(CatAIController->BackToPatrolTimer);
+}
+
+void ACat::EndPlay(EEndPlayReason::Type EndPlayReason)
+{
+    Super::EndPlay(EndPlayReason);
+
+    GetWorld()->GetTimerManager().ClearTimer(AnimationTimerHandle);
 }
