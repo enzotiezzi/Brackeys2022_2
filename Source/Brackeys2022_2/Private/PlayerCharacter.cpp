@@ -109,4 +109,9 @@ void APlayerCharacter::NotifyFound()
     {
         PlayAnimMontage(FoundAnimMontage);
     }
+
+    if(FoundNoise) 
+    {
+        UGameplayStatics::SpawnSoundAtLocation(GetWorld(), FoundNoise, GetActorLocation());
+    }
 }
