@@ -39,6 +39,8 @@ void ACatAIController::BeginPlay()
 		RunBehaviorTree(BehaviorTree);
 
 		GetBlackboardComponent()->SetValueAsBool("HasNoise", false);
+
+		GetWorld()->GetTimerManager().ClearTimer(BackToPatrolTimer);
 	}
 }
 
@@ -99,7 +101,7 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 
 						CurrentPlayer = Player;
 
-						GetBlackboardComponent()->SetValueAsObject("Target", CurrentPlayer);
+						GetBlackboardComponent()->SetValueAsVector("TargetLocation", CurrentPlayer->GetActorLocation());
 					}
 				}
 			}
@@ -114,8 +116,6 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 					if (!Info.LastSensedStimuli[0].WasSuccessfullySensed())
 					{
 						CurrentPlayer = nullptr;
-
-						GetBlackboardComponent()->SetValueAsObject("Target", CurrentPlayer);
 					}
 				}
 			}
@@ -130,4 +130,9 @@ void ACatAIController::SetHearingRange(float HearingRange)
 	HearingConfig->HearingRange = HearingRange;
 
 	AIPerceptionComponent->ConfigureSense(*HearingConfig);
+}
+
+void ACatAIController::BeginDestroy()
+{
+	GetWorld()->GetTimerManager().ClearTimer(BackToPatrolTimer);
 }

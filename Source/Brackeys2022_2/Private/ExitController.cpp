@@ -125,6 +125,9 @@ void AExitController::GoToNextLevel()
 			PlayerController->SetInputMode(FInputModeGameOnly());
 		}
 
+		ChiefChicken->Destroy();
+		Believer->Destroy();
+
 		UGameplayStatics::OpenLevel(GetWorld(), NextLevelName);
 	}
 }
