@@ -215,6 +215,10 @@ void AMyPlayerController::OnStartAnimFinished()
 	CreditsButton->OnClicked.AddDynamic(this, &AMyPlayerController::ShowCredits);
 	QuitButton->OnClicked.AddDynamic(this, &AMyPlayerController::QuitGame);
 
+	PlayButton->SetVisibility(ESlateVisibility::Visible);
+	CreditsButton->SetVisibility(ESlateVisibility::Visible);
+	QuitButton->SetVisibility(ESlateVisibility::Visible);
+
 	SetShowMouseCursor(true);
 
 	FInputModeUIOnly InputMode;
@@ -236,6 +240,10 @@ void AMyPlayerController::PlayIntro()
 		PlayButton->OnClicked.Clear();
 		CreditsButton->OnClicked.Clear();
 		QuitButton->OnClicked.Clear();
+
+		PlayButton->SetVisibility(ESlateVisibility::Hidden);
+		CreditsButton->SetVisibility(ESlateVisibility::Hidden);
+		QuitButton->SetVisibility(ESlateVisibility::Hidden);
 
 		SetShowMouseCursor(false);
 
@@ -287,7 +295,7 @@ void AMyPlayerController::ShowMainMenu()
 		if (GameOverWidget->IsInViewport())
 			GameOverWidget->RemoveFromViewport();
 
-		MainMenuWidget->AddToViewport(3);
+		MainMenuWidget->AddToViewport();
 
 		UButton* PlayButton = Cast<UButton>(MainMenuWidget->GetWidgetFromName("PlayButton"));
 		UButton* CreditsButton = Cast<UButton>(MainMenuWidget->GetWidgetFromName("CreditsButton"));
@@ -296,10 +304,20 @@ void AMyPlayerController::ShowMainMenu()
 		PlayButton->OnClicked.AddDynamic(this, &AMyPlayerController::PlayGame);
 		CreditsButton->OnClicked.AddDynamic(this, &AMyPlayerController::ShowCredits);
 		QuitButton->OnClicked.AddDynamic(this, &AMyPlayerController::QuitGame);
+		
+		PlayButton->SetVisibility(ESlateVisibility::Visible);
+		CreditsButton->SetVisibility(ESlateVisibility::Visible);
+		QuitButton->SetVisibility(ESlateVisibility::Visible);
 
 		UGameplayStatics::SetGamePaused(GetWorld(), true);
 
 		SetShowMouseCursor(true);
+
+		FInputModeUIOnly InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+		InputMode.SetWidgetToFocus(PlayButton->TakeWidget());
+
+		SetInputMode(InputMode);
 
 		MainMenuWidget->StopAllAnimations();
 
@@ -307,12 +325,6 @@ void AMyPlayerController::ShowMainMenu()
 		{
 			MainMenuWidget->PlayAnimation(ConstantAnim, 0, 0);
 		}
-
-		FInputModeUIOnly InputMode;
-		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
-		InputMode.SetWidgetToFocus(PlayButton->TakeWidget());
-
-		SetInputMode(InputMode);
 	}
 }
 
