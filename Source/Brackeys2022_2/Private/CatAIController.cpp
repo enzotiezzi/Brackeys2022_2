@@ -136,8 +136,3 @@ void ACatAIController::SetHearingRange(float HearingRange)
 
 	AIPerceptionComponent->ConfigureSense(*HearingConfig);
 }
-
-void ACatAIController::BeginDestroy()
-{
-	GetWorld()->GetTimerManager().ClearTimer(BackToPatrolTimer);
-}
