@@ -86,7 +86,7 @@ UWidgetAnimation* APlayerCharacter::GetAnimation(FText AnimationName)
 
                 if (WidgetAnim)
                 {
-                    if (WidgetAnim->GetDisplayName().CompareTo(AnimationName) == 0)
+                    if (WidgetAnim->GetFName().ToString().Contains(AnimationName.ToString()))
                         return WidgetAnim;
                 }
             }

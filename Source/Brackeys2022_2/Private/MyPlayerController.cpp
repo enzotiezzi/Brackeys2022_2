@@ -287,6 +287,8 @@ void AMyPlayerController::ShowMainMenu()
 		if (GameOverWidget->IsInViewport())
 			GameOverWidget->RemoveFromViewport();
 
+		MainMenuWidget->AddToViewport(3);
+
 		UButton* PlayButton = Cast<UButton>(MainMenuWidget->GetWidgetFromName("PlayButton"));
 		UButton* CreditsButton = Cast<UButton>(MainMenuWidget->GetWidgetFromName("CreditsButton"));
 		UButton* QuitButton = Cast<UButton>(MainMenuWidget->GetWidgetFromName("QuitButton"));
@@ -294,8 +296,6 @@ void AMyPlayerController::ShowMainMenu()
 		PlayButton->OnClicked.AddDynamic(this, &AMyPlayerController::PlayGame);
 		CreditsButton->OnClicked.AddDynamic(this, &AMyPlayerController::ShowCredits);
 		QuitButton->OnClicked.AddDynamic(this, &AMyPlayerController::QuitGame);
-
-		MainMenuWidget->AddToViewport(1);
 
 		UGameplayStatics::SetGamePaused(GetWorld(), true);
 
@@ -310,7 +310,7 @@ void AMyPlayerController::ShowMainMenu()
 
 		FInputModeUIOnly InputMode;
 		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
-		InputMode.SetWidgetToFocus(MainMenuWidget->GetWidgetFromName("PlayButton")->TakeWidget());
+		InputMode.SetWidgetToFocus(PlayButton->TakeWidget());
 
 		SetInputMode(InputMode);
 	}
@@ -417,7 +417,7 @@ UWidgetAnimation* AMyPlayerController::GetAnimation(FText AnimationName)
 
 				if (WidgetAnim)
 				{
-					if (WidgetAnim->GetDisplayName().CompareTo(AnimationName) == 0)
+					if (WidgetAnim->GetFName().ToString().Contains(AnimationName.ToString()))
 						return WidgetAnim;
 				}
 			}

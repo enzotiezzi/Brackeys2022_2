@@ -35,7 +35,7 @@ void ACat::BeginPlay()
 		{
 			CurrentPathPoint = 0;
 
-			AIController->GetBlackboardComponent()->SetValueAsVector("PathPoint", Path[CurrentPathPoint]->GetActorLocation());
+			// AIController->GetBlackboardComponent()->SetValueAsVector("PathPoint", Path[CurrentPathPoint]->GetActorLocation());
 		}
 
 		AIController->SetHearingRange(HearingRange);
@@ -67,7 +67,7 @@ UWidgetAnimation* ACat::GetAnimation(FText AnimationName)
 
                 if (WidgetAnim)
                 {
-                    if (WidgetAnim->GetDisplayName().CompareTo(AnimationName) == 0)
+                    if (WidgetAnim->GetFName().ToString().Contains(AnimationName.ToString()))
                         return WidgetAnim;
                 }
             }
