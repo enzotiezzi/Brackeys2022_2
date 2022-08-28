@@ -26,9 +26,7 @@ EBTNodeResult::Type UBTTGetNextPathPoint::ExecuteTask(UBehaviorTreeComponent& Ow
 
 		int Mod = Cat->CurrentPathPoint % Cat->Path.Num();
 
-		GEngine->AddOnScreenDebugMessage(rand(), 1, FColor::Red, FString::FromInt(Mod));
-
-		if (Mod == 0)
+		if (Cat->Path.Num() == 1)
 			Cat->SetActorRotation(Cat->Path[0]->GetActorRotation());
 
 		Cat->CurrentPathPoint++;
