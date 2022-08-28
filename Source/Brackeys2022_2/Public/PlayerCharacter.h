@@ -65,15 +65,21 @@ protected:
 
 	/*
 	*
+	* ANIMATION
+	* 
+	*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* NoiseAnimMontage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* FoundAnimMontage;
+
+	/*
+	*
 	* SOUND
 	* 
 	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
 	USoundBase* Noise;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation")
-	UAnimMontage* NoiseAnimMontage;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation")
-	UAnimMontage* FoundAnimMontage;
 };

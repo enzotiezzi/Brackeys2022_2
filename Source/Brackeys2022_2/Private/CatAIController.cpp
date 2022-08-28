@@ -115,7 +115,12 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 				{
 					if (!Info.LastSensedStimuli[0].WasSuccessfullySensed())
 					{
+						GetBlackboardComponent()->SetValueAsBool("HasClue", true);
+						GetBlackboardComponent()->SetValueAsVector("ClueLocation", CurrentPlayer->GetActorLocation());
+
 						CurrentPlayer = nullptr;
+
+						GetBlackboardComponent()->SetValueAsObject("Target", CurrentPlayer);
 					}
 				}
 			}
