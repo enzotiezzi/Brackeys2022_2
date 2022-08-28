@@ -101,7 +101,7 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 
 						CurrentPlayer = Player;
 
-						GetBlackboardComponent()->SetValueAsVector("TargetLocation", CurrentPlayer->GetActorLocation());
+						GetBlackboardComponent()->SetValueAsObject("Target", CurrentPlayer);
 					}
 				}
 			}

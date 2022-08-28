@@ -63,7 +63,7 @@ void APlayerCharacter::MakeNoise()
                 PlayAnimMontage(NoiseAnimMontage);
 
             if (Noise)
-                UGameplayStatics::PlaySoundAtLocation(GetWorld(), Noise, GetActorLocation());
+                UGameplayStatics::SpawnSoundAtLocation(GetWorld(), Noise, GetActorLocation());
         }
 	}
 }
