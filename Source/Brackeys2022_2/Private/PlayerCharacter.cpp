@@ -102,3 +102,11 @@ void APlayerCharacter::OnAnimationFinished()
 {
     SoundWidgetComponent->SetVisibility(false);
 }
+
+void APlayerCharacter::NotifyFound()
+{
+    if (FoundAnimMontage)
+    {
+        PlayAnimMontage(FoundAnimMontage);
+    }
+}
