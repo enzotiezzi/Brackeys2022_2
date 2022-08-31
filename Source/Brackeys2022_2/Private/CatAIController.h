@@ -53,4 +53,13 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite)
 	APlayerCharacter* CurrentPlayer;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Chase Cooldown")
+	float CooldownToChaseTargetAgain = 1;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Chase Cooldown")
+	bool bCanChaseEnemy = true;
+
+	UPROPERTY(BlueprintReadWrite)
+	FTimerHandle CanChaseEnemyTimerHandle;
 };

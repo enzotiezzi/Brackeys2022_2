@@ -99,9 +99,12 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 
 						Player->NotifyFound();
 
-						CurrentPlayer = Player;
+						if (bCanChaseEnemy)
+						{
+							CurrentPlayer = Player;
 
-						GetBlackboardComponent()->SetValueAsObject("Target", CurrentPlayer);
+							GetBlackboardComponent()->SetValueAsObject("Target", CurrentPlayer);
+						}
 					}
 				}
 			}
@@ -120,6 +123,16 @@ void ACatAIController::OnTargetUpdated(AActor* Actor, FAIStimulus Stimulus)
 							GetBlackboardComponent()->SetValueAsBool("HasClue", true);
 							GetBlackboardComponent()->SetValueAsVector("ClueLocation", CurrentPlayer->GetActorLocation());
 						}
+
+						bCanChaseEnemy = false;
+
+						if (CanChaseEnemyTimerHandle.IsValid())
+							GetWorld()->GetTimerManager().ClearTimer(CanChaseEnemyTimerHandle);
+
+						GetWorld()->GetTimerManager().SetTimer(CanChaseEnemyTimerHandle, [this]() 
+							{
+								bCanChaseEnemy = true;
+							}, CooldownToChaseTargetAgain, false);
 
 						CurrentPlayer = nullptr;
 
@@ -144,5 +157,6 @@ void ACatAIController::EndPlay(EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	GetWorld()->GetTimerManager().ClearTimer(BackToPatrolTimer);
+	GetWorld()->GetTimerManager().ClearTimer(BackToPatrolTimer);	
+	GetWorld()->GetTimerManager().ClearTimer(CanChaseEnemyTimerHandle);
 }
